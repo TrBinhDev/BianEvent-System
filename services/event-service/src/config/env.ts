@@ -15,6 +15,7 @@ const envSchema = z.object({
   KAFKA_CLIENT_ID: z.string(),
 
   INTERNAL_API_KEY: z.string(),
+  JWT_ACCESS_SECRET: z.string(),
 
   R2_ACCOUNT_ID: z.string(),
   R2_ACCESS_KEY_ID: z.string(),
