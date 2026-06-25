@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+}
+
+enum TicketStatus {
+  ACTIVE
+  CANCELLED
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  userId        String        @map("user_id")
+  eventId       String        @map("event_id")
+  ticketTypeId  String        @map("ticket_type_id")
+  quantity      Int
+  totalAmount   Decimal       @map("total_amount") @db.Decimal(12, 2)
+  status        BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(UNPAID) @map("payment_status")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  tickets    Ticket[]
+  statusLogs BookingStatusLog[]
+
+  @@map("bookings")
+}
+
+model Ticket {
+  id        String       @id @default(uuid())
+  bookingId String       @map("booking_id")
+  userId    String       @map("user_id")
+  eventId   String       @map("event_id")
+  status    TicketStatus @default(ACTIVE)
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("tickets")
+}
+
+model BookingStatusLog {
+  id         String         @id @default(uuid())
+  bookingId  String         @map("booking_id")
+  fromStatus BookingStatus? @map("from_status")
+  toStatus   BookingStatus  @map("to_status")
+  reason     String?
+  createdAt  DateTime       @default(now()) @map("created_at")
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("booking_status_logs")
+}

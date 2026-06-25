@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  events Event[]
+
+  @@map("categories")
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  organizerId   String      @map("organizer_id")
+  categoryId    String?     @map("category_id")
+  title         String
+  description   String?
+  coverUrl      String?     @map("cover_url")
+  seatingMapUrl String?     @map("seating_map_url")
+  status        EventStatus @default(DRAFT)
+
+  venueName String   @map("venue_name")
+  address   String
+  city      String
+  lat       Decimal? @db.Decimal(10, 8)
+  lng       Decimal? @db.Decimal(11, 8)
+
+  startAt     DateTime @map("start_at")
+  endAt       DateTime @map("end_at")
+  saleStartAt DateTime @map("sale_start_at")
+  saleEndAt   DateTime @map("sale_end_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  images      EventImage[]
+  ticketTypes TicketType[]
+
+  @@map("events")
+}
+
+model EventImage {
+  id        String   @id @default(uuid())
+  eventId   String   @map("event_id")
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_images")
+}
+
+model TicketType {
+  id             String   @id @default(uuid())
+  eventId        String   @map("event_id")
+  name           String
+  description    String?
+  price          Decimal  @db.Decimal(12, 2)
+  totalSlots     Int      @map("total_slots")
+  availableSlots Int      @map("available_slots")
+  zone           String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_types")
+}
