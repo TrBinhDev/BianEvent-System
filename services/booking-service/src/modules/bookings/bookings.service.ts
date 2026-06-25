@@ -68,7 +68,7 @@ export const createBooking = async (userId: string, dto: CreateBookingDto) => {
     // 8. Tạo booking + tickets + log
     const totalAmount = Number(ticketType.price) * quantity
 
-    booking = await prisma.$transaction(async (tx) => {
+    booking = await prisma.$transaction(async (tx: { booking: { create: (arg0: { data: { userId: string; eventId: any; ticketTypeId: string; quantity: number; totalAmount: number; status: string } }) => any }; ticket: { createMany: (arg0: { data: { bookingId: any; userId: string; eventId: any }[] }) => any }; bookingStatusLog: { create: (arg0: { data: { bookingId: any; toStatus: string; reason: string } }) => any } }) => {
       const newBooking = await tx.booking.create({
         data: {
           userId,
@@ -123,7 +123,7 @@ export const createBooking = async (userId: string, dto: CreateBookingDto) => {
             quantity,
             totalAmount,
             startAt: ticketType.event.startAt,
-            tickets: tickets.map((t) => ({ ticketId: t.id })),
+            tickets: tickets.map((t: { id: any }) => ({ ticketId: t.id })),
           }),
         },
       ],
