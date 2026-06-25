@@ -21,6 +21,7 @@ enum PaymentStatus {
 
 enum TicketStatus {
   ACTIVE
+  USED
   CANCELLED
 }
 

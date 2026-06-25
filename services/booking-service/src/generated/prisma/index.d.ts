@@ -53,6 +53,7 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 export const TicketStatus: {
   ACTIVE: 'ACTIVE',
+  USED: 'USED',
   CANCELLED: 'CANCELLED'
 };
 

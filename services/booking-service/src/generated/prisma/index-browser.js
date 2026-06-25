@@ -181,6 +181,7 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
 
 exports.TicketStatus = exports.$Enums.TicketStatus = {
   ACTIVE: 'ACTIVE',
+  USED: 'USED',
   CANCELLED: 'CANCELLED'
 };
 

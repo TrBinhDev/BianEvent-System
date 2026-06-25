@@ -116,6 +116,14 @@ app.all(
 );
 
 // ── Booking Service ──────────────────────────────────────────────
+app.all(
+  "/api/bookings/tickets/:ticketId/checkin",
+  authenticate,
+  authorize("ORGANIZER"),
+  (req, res) => {
+    proxy.web(req, res, { target: env.BOOKING_SERVICE_URL });
+  },
+);
 app.all("/api/bookings", authenticate, authorize("USER"), (req, res) => {
   proxy.web(req, res, { target: env.BOOKING_SERVICE_URL });
 });
