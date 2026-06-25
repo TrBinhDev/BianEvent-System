@@ -2,11 +2,11 @@
 
 ## Cấu hình chung
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Brokers | `localhost:9092` |
-| Partitions mỗi topic | 1 |
-| Replication factor | 1 (dev), 3 (prod) |
+| Thuộc tính           | Giá trị           |
+| -------------------- | ----------------- |
+| Brokers              | `localhost:9092`  |
+| Partitions mỗi topic | 1                 |
+| Replication factor   | 1 (dev), 3 (prod) |
 
 ---
 
@@ -14,18 +14,18 @@
 
 ### `user.registered`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | User Service |
-| Consumer | Notification Service (`notification-group`) |
-| Khi nào | User đăng ký tài khoản thành công |
+| Thuộc tính | Giá trị                                     |
+| ---------- | ------------------------------------------- |
+| Publisher  | User Service                                |
+| Consumer   | Notification Service (`notification-group`) |
+| Khi nào    | User đăng ký tài khoản thành công           |
 
 ```typescript
 payload: {
-  userId: string
-  email: string
-  fullName: string
-  otp: string        // OTP 6 số xác thực email
+  userId: string;
+  email: string;
+  fullName: string;
+  otp: string; // OTP 6 số xác thực email
 }
 ```
 
@@ -35,17 +35,17 @@ Notification Service xử lý: gửi email OTP xác thực.
 
 ### `user.organizer_approved`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | User Service |
-| Consumer | Notification Service (`notification-group`) |
-| Khi nào | Admin duyệt đơn apply Organizer |
+| Thuộc tính | Giá trị                                     |
+| ---------- | ------------------------------------------- |
+| Publisher  | User Service                                |
+| Consumer   | Notification Service (`notification-group`) |
+| Khi nào    | Admin duyệt đơn apply Organizer             |
 
 ```typescript
 payload: {
-  userId: string
-  email: string
-  fullName: string
+  userId: string;
+  email: string;
+  fullName: string;
 }
 ```
 
@@ -55,18 +55,18 @@ Notification Service xử lý: gửi email chúc mừng + lưu notification.
 
 ### `notification.send`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | User Service |
-| Consumer | Notification Service (`notification-group`) |
-| Khi nào | User yêu cầu reset password |
+| Thuộc tính | Giá trị                                     |
+| ---------- | ------------------------------------------- |
+| Publisher  | User Service                                |
+| Consumer   | Notification Service (`notification-group`) |
+| Khi nào    | User yêu cầu reset password                 |
 
 ```typescript
 payload: {
-  to: string
-  type: 'RESET_PASSWORD'
+  to: string;
+  type: "RESET_PASSWORD";
   data: {
-    resetLink: string
+    resetLink: string;
   }
 }
 ```
@@ -77,19 +77,19 @@ Notification Service xử lý: gửi email reset password.
 
 ### `event.created`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | Event Service |
-| Consumer | Không có (reserved cho sau) |
-| Khi nào | Organizer publish event (DRAFT → PUBLISHED) |
+| Thuộc tính | Giá trị                                     |
+| ---------- | ------------------------------------------- |
+| Publisher  | Event Service                               |
+| Consumer   | Không có (reserved cho sau)                 |
+| Khi nào    | Organizer publish event (DRAFT → PUBLISHED) |
 
 ```typescript
 payload: {
-  eventId: string
-  organizerId: string
-  title: string
-  city: string
-  startAt: string
+  eventId: string;
+  organizerId: string;
+  title: string;
+  city: string;
+  startAt: string;
 }
 ```
 
@@ -99,23 +99,24 @@ payload: {
 
 ### `event.cancelled`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | Event Service |
-| Consumer | Notification Service (`notification-group`), Booking Service (`booking-group`) |
-| Khi nào | Event bị huỷ bởi Organizer hoặc Admin |
+| Thuộc tính | Giá trị                                                                        |
+| ---------- | ------------------------------------------------------------------------------ |
+| Publisher  | Event Service                                                                  |
+| Consumer   | Notification Service (`notification-group`), Booking Service (`booking-group`) |
+| Khi nào    | Event bị huỷ bởi Organizer hoặc Admin                                          |
 
 ```typescript
 payload: {
-  eventId: string
-  organizerId: string
-  title: string
-  startAt: string
+  eventId: string;
+  organizerId: string;
+  title: string;
+  startAt: string;
   bookedUserEmails: {
-    userId: string
-    email: string
-    fullName: string
-  }[]
+    userId: string;
+    email: string;
+    fullName: string;
+  }
+  [];
 }
 ```
 
@@ -127,32 +128,34 @@ Booking Service xử lý: cập nhật tất cả booking của event → `CANCE
 
 ### `booking.confirmed`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | Booking Service |
-| Consumer | Notification Service (`notification-group`) |
-| Khi nào | Đặt vé thành công |
+| Thuộc tính | Giá trị                                     |
+| ---------- | ------------------------------------------- |
+| Publisher  | Booking Service                             |
+| Consumer   | Notification Service (`notification-group`) |
+| Khi nào    | Đặt vé thành công                           |
 
 ```typescript
 payload: {
-  bookingId: string
-  userId: string
-  email: string
-  fullName: string
-  eventTitle: string
-  ticketTypeName: string
-  zone: string
-  quantity: number
-  totalAmount: number
-  startAt: string
-  venueName: string
+  bookingId: string;
+  userId: string;
+  email: string;
+  fullName: string;
+  eventTitle: string;
+  ticketTypeName: string;
+  zone: string;
+  quantity: number;
+  totalAmount: number;
+  startAt: string;
+  venueName: string;
   tickets: {
-    ticketId: string   // dùng để generate QR on-the-fly
-  }[]
+    ticketId: string; // dùng để generate QR on-the-fly
+  }
+  [];
 }
 ```
 
 Notification Service xử lý:
+
 - Gửi email xác nhận kèm QR (1 email/ticket)
 - Emit Socket `booking_confirmed` về đúng user
 - Emit Socket `slot_updated` về tất cả user đang xem event
@@ -162,23 +165,24 @@ Notification Service xử lý:
 
 ### `booking.failed`
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Publisher | Booking Service |
-| Consumer | Notification Service (`notification-group`) |
-| Khi nào | Đặt vé thất bại (hết slot, lock fail, lỗi DB...) |
+| Thuộc tính | Giá trị                                          |
+| ---------- | ------------------------------------------------ |
+| Publisher  | Booking Service                                  |
+| Consumer   | Notification Service (`notification-group`)      |
+| Khi nào    | Đặt vé thất bại (hết slot, lock fail, lỗi DB...) |
 
 ```typescript
 payload: {
-  userId: string
-  email: string
-  fullName: string
-  eventTitle: string
-  reason: string     // "Hết vé", "Đã có người đặt", "Lỗi hệ thống"
+  userId: string;
+  email: string;
+  fullName: string;
+  eventTitle: string;
+  reason: string; // "Hết vé", "Đã có người đặt", "Lỗi hệ thống"
 }
 ```
 
 Notification Service xử lý:
+
 - Gửi email thông báo thất bại
 - Emit Socket `booking_failed` về đúng user
 - Lưu notification
@@ -189,33 +193,33 @@ Notification Service xử lý:
 
 ### Publisher map
 
-| Service | Publish topics |
-|---|---|
-| User Service | `user.registered`, `user.organizer_approved`, `notification.send` |
-| Event Service | `event.created`, `event.cancelled` |
-| Booking Service | `booking.confirmed`, `booking.failed` |
-| Notification Service | Không publish |
+| Service              | Publish topics                                                    |
+| -------------------- | ----------------------------------------------------------------- |
+| User Service         | `user.registered`, `user.organizer_approved`, `notification.send` |
+| Event Service        | `event.created`, `event.cancelled`                                |
+| Booking Service      | `booking.confirmed`, `booking.failed`                             |
+| Notification Service | Không publish                                                     |
 
 ### Consumer map
 
-| Service | Consumer group | Subscribe topics |
-|---|---|---|
+| Service              | Consumer group       | Subscribe topics                                                                                                            |
+| -------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Notification Service | `notification-group` | `user.registered`, `user.organizer_approved`, `notification.send`, `event.cancelled`, `booking.confirmed`, `booking.failed` |
-| Booking Service | `booking-group` | `event.cancelled` |
-| User Service | Không consume | — |
-| Event Service | Không consume | — |
+| Booking Service      | `booking-group`      | `event.cancelled`                                                                                                           |
+| User Service         | Không consume        | —                                                                                                                           |
+| Event Service        | Không consume        | —                                                                                                                           |
 
 ### Topic × Consumer matrix
 
-| Topic | notification-group | booking-group |
-|---|---|---|
-| `user.registered` | ✓ | — |
-| `user.organizer_approved` | ✓ | — |
-| `notification.send` | ✓ | — |
-| `event.created` | — | — |
-| `event.cancelled` | ✓ | ✓ |
-| `booking.confirmed` | ✓ | — |
-| `booking.failed` | ✓ | — |
+| Topic                     | notification-group | booking-group |
+| ------------------------- | ------------------ | ------------- |
+| `user.registered`         | ✓                  | —             |
+| `user.organizer_approved` | ✓                  | —             |
+| `notification.send`       | ✓                  | —             |
+| `event.created`           | —                  | —             |
+| `event.cancelled`         | ✓                  | ✓             |
+| `booking.confirmed`       | ✓                  | —             |
+| `booking.failed`          | ✓                  | —             |
 
 ---
 
