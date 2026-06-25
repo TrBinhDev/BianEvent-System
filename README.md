@@ -287,4 +287,4 @@ pnpm dev:dashboard     # Chạy Dashboard frontend
 
 ## Kafka UI
 
-Truy cập `http://localhost:8080` để xem Kafka topics và messages trực quan.
+Truy cập `http://localhost:8080` để xem Kafka topics và messages trực quann.
