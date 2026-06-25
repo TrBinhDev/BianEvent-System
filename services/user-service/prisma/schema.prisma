@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ORGANIZER
+  ADMIN
+}
+
+enum UserStatus {
+  UNVERIFIED
+  ACTIVE
+  BANNED
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  fullName     String     @map("full_name")
+  avatarUrl    String?    @map("avatar_url")
+  role         Role       @default(USER)
+  status       UserStatus @default(UNVERIFIED)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  refreshTokens        RefreshToken[]
+  passwordResets       PasswordReset[]
+  organizerApplication OrganizerApplication?
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_resets")
+}
+
+model OrganizerApplication {
+  id           String            @id @default(uuid())
+  userId       String            @unique @map("user_id")
+  organization String
+  description  String?
+  contactPhone String?           @map("contact_phone")
+  status       ApplicationStatus @default(PENDING)
+  reviewedBy   String?           @map("reviewed_by")
+  reviewedAt   DateTime?         @map("reviewed_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("organizer_applications")
+}
