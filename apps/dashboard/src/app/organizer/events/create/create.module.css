@@ -1,0 +1,264 @@
+/* app/organizer/events/create/create.module.css */
+
+/* ── Container ── */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── Back link ── */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #a89070;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  transition: color 0.18s;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: #3d2f1f;
+}
+
+.back svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  padding: 28px 32px;
+  animation: fadeInUp 0.35s ease both;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3d2f1f;
+  margin-bottom: 6px;
+}
+
+.cardSub {
+  font-size: 13px;
+  color: #a89070;
+  margin-bottom: 24px;
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d2f1f;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.label svg {
+  width: 15px;
+  height: 15px;
+  color: #c0a888;
+}
+
+.required {
+  color: #d07070;
+  font-weight: 700;
+}
+
+.input {
+  padding: 10px 14px;
+  border: 1.5px solid #e8e0d5;
+  border-radius: 10px;
+  background: #fff;
+  color: #3d2f1f;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: inherit;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: #c8b89a;
+}
+
+.input:focus {
+  border-color: #c8a882;
+  box-shadow: 0 0 0 3px rgba(200, 168, 130, 0.14);
+}
+
+.input.error {
+  border-color: #d07070;
+}
+
+.input.error:focus {
+  box-shadow: 0 0 0 3px rgba(208, 112, 112, 0.14);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.select {
+  padding: 10px 14px;
+  border: 1.5px solid #e8e0d5;
+  border-radius: 10px;
+  background: #fff;
+  color: #3d2f1f;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c0a888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  width: 100%;
+}
+
+.select:focus {
+  border-color: #c8a882;
+  box-shadow: 0 0 0 3px rgba(200, 168, 130, 0.14);
+}
+
+.select.error {
+  border-color: #d07070;
+}
+
+.errorMsg {
+  font-size: 12px;
+  color: #d07070;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.btn {
+  flex: 1;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btnCancel {
+  background: #fff;
+  border: 1.5px solid #e8e0d5;
+  color: #7d6550;
+}
+
+.btnCancel:hover {
+  border-color: #c8a882;
+  color: #8b5e3c;
+}
+
+.btnSubmit {
+  background: linear-gradient(135deg, #c8a882, #b8916a);
+  color: #fff;
+}
+
+.btnSubmit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(184, 145, 106, 0.3);
+}
+
+.btnSubmit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .card {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+  }
+}

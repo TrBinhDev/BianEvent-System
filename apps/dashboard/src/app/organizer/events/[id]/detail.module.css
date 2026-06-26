@@ -1,0 +1,832 @@
+/* app/organizer/events/[id]/detail.module.css */
+
+/* ── Container ── */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ── Skeleton ── */
+.skeletonContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.skeletonTitle {
+  height: 32px;
+  background: #f0ebe3;
+  border-radius: 8px;
+  width: 25%;
+  margin-bottom: 24px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.skeletonMain {
+  height: 384px;
+  background: #f0ebe3;
+  border-radius: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonSide {
+  height: 256px;
+  background: #f0ebe3;
+  border-radius: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ── Not Found ── */
+.notFound {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.notFoundText {
+  color: #c0a888;
+  text-align: center;
+  padding: 48px 0;
+}
+
+.notFoundLink {
+  color: #c8a882;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.notFoundLink:hover {
+  text-decoration: underline;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-top: 8px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #a89070;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.18s;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: #3d2f1f;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3d2f1f;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btnCheckin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #f0f4fa;
+  color: #4a6a8a;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.btnCheckin:hover {
+  background: #e0e8f0;
+}
+
+.btnPublish {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #e8f5ef;
+  color: #2e7d5a;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.btnPublish:hover {
+  background: #d0ece0;
+}
+
+.btnCancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fce8e8;
+  color: #b03030;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.btnCancel:hover {
+  background: #f8d8d8;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: #faf8f5;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid #e8e0d5;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7d6550;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tab:hover {
+  color: #3d2f1f;
+}
+
+.tab.active {
+  background: #fff;
+  color: #3d2f1f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.tab svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  overflow: hidden;
+  animation: fadeInUp 0.35s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0ebe3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3d2f1f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle svg {
+  color: #c0a888;
+}
+
+.cardStatus {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a89070;
+}
+
+.cardBody {
+  padding: 20px;
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #3d2f1f;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.label svg {
+  width: 14px;
+  height: 14px;
+  color: #c0a888;
+}
+
+.required {
+  color: #d07070;
+  font-weight: 700;
+}
+
+.input {
+  padding: 9px 14px;
+  border: 1.5px solid #e8e0d5;
+  border-radius: 10px;
+  background: #fff;
+  color: #3d2f1f;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: inherit;
+  width: 100%;
+}
+
+.input:focus {
+  border-color: #c8a882;
+  box-shadow: 0 0 0 3px rgba(200, 168, 130, 0.14);
+}
+
+.input.error {
+  border-color: #d07070;
+}
+
+.input.error:focus {
+  box-shadow: 0 0 0 3px rgba(208, 112, 112, 0.14);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.select {
+  padding: 9px 14px;
+  border: 1.5px solid #e8e0d5;
+  border-radius: 10px;
+  background: #fff;
+  color: #3d2f1f;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c0a888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  width: 100%;
+}
+
+.select:focus {
+  border-color: #c8a882;
+  box-shadow: 0 0 0 3px rgba(200, 168, 130, 0.14);
+}
+
+.errorMsg {
+  font-size: 12px;
+  color: #d07070;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.btnSave {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, #c8a882, #b8916a);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.btnSave:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(184, 145, 106, 0.3);
+}
+
+.btnSave:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Tickets ── */
+.btnAddTicket {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #c8a882, #b8916a);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.btnAddTicket:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.ticketForm {
+  background: #faf8f5;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e8e0d5;
+}
+
+.ticketFormTitle {
+  font-weight: 600;
+  color: #3d2f1f;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.ticketFormContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ticketFormActions {
+  display: flex;
+  gap: 8px;
+}
+
+.btnCancelTicket {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #e8e0d5;
+  border-radius: 8px;
+  background: #fff;
+  color: #7d6550;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.btnCancelTicket:hover {
+  border-color: #c8a882;
+  color: #8b5e3c;
+}
+
+.btnSubmitTicket {
+  flex: 1;
+  padding: 8px;
+  background: linear-gradient(135deg, #c8a882, #b8916a);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.btnSubmitTicket:hover {
+  opacity: 0.9;
+}
+
+.ticketList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ticketItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #f0ebe3;
+  transition: background 0.15s;
+}
+
+.ticketItem:hover {
+  background: #faf8f5;
+}
+
+.ticketName {
+  font-weight: 600;
+  color: #3d2f1f;
+}
+
+.ticketMeta {
+  font-size: 12px;
+  color: #a89070;
+}
+
+.ticketRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ticketPrice {
+  font-weight: 600;
+  color: #3d2f1f;
+}
+
+.ticketActions {
+  display: flex;
+  gap: 4px;
+}
+
+.ticketBtnEdit {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #f0ebe3;
+  color: #7d6550;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.ticketBtnEdit:hover {
+  background: #e8e0d5;
+}
+
+.ticketBtnDelete {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #fce8e8;
+  color: #b03030;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.ticketBtnDelete:hover {
+  background: #f8d8d8;
+}
+
+.emptyTickets {
+  text-align: center;
+  padding: 32px 0;
+  color: #c0a888;
+  font-size: 14px;
+}
+
+.emptyTicketsIcon {
+  display: block;
+  margin: 0 auto 8px;
+  opacity: 0.3;
+}
+
+/* ── Media ── */
+.mediaGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.mediaCard {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  overflow: hidden;
+  animation: fadeInUp 0.35s ease both;
+}
+
+.mediaCardCover {
+  grid-column: span 2;
+}
+
+.mediaCardFull {
+  grid-column: span 3;
+}
+
+/* Ảnh bìa - fix cứng chiều cao */
+.coverPreview {
+  width: 100%;
+  height: 320px;
+  background: #f0ebe3;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c0a888;
+  font-size: 14px;
+}
+
+/* Sơ đồ chỗ ngồi - fix cứng chiều cao */
+.seatingMapImage {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.seatingMapPlaceholder {
+  width: 100%;
+  height: 320px;
+  background: #f0ebe3;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c0a888;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* Gallery - fix cứng chiều cao */
+.mediaGridInner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.mediaItem {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: #f0ebe3;
+}
+
+.mediaItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.mediaItem:hover .mediaOverlay {
+  opacity: 1;
+}
+
+.mediaOverlay button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mediaOverlay button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.emptyGallery {
+  text-align: center;
+  padding: 32px 0;
+  color: #c0a888;
+  font-size: 14px;
+}
+
+.emptyGalleryIcon {
+  display: block;
+  margin: 0 auto 8px;
+  opacity: 0.3;
+}
+
+.uploadBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border: 2px dashed #e8e0d5;
+  border-radius: 10px;
+  background: transparent;
+  color: #a89070;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.uploadBtn:hover {
+  border-color: #c8a882;
+  color: #8b5e3c;
+  background: #faf8f5;
+}
+
+.uploadInput {
+  display: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 16px;
+    max-width: 200px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1 1 auto;
+  }
+
+  .mediaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .mediaCardCover {
+    grid-column: span 1;
+  }
+
+  .mediaCardFull {
+    grid-column: span 1;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    justify-content: stretch;
+  }
+
+  .headerActions .btnCheckin,
+  .headerActions .btnPublish,
+  .headerActions .btnCancel {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .skeletonGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .cardBody {
+    padding: 14px;
+  }
+
+  .mediaGridInner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .headerLeft {
+    flex-wrap: wrap;
+  }
+
+  /* Responsive cho ảnh trên mobile */
+  .coverPreview,
+  .seatingMapImage,
+  .seatingMapPlaceholder {
+    height: 200px;
+  }
+
+  .mediaItem {
+    height: 150px;
+  }
+}

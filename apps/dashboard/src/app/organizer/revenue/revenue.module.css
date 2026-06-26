@@ -1,0 +1,405 @@
+/* app/organizer/revenue/revenue.module.css */
+
+.container {
+  width: 100%;
+  padding: 0;
+}
+
+/* ── Stats ── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  padding: 20px 24px;
+  animation: fadeInUp 0.35s ease both;
+}
+
+.statCard:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.statCard:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.statCard:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c0a888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 800;
+  color: #3d2f1f;
+  margin-top: 4px;
+}
+
+.statValue.revenue {
+  background: linear-gradient(135deg, #c8a882, #b8916a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  overflow: hidden;
+  animation: fadeInUp 0.35s ease both;
+}
+
+.cardHeader {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0ebe3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3d2f1f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle svg {
+  color: #c0a888;
+}
+
+.cardCount {
+  font-size: 12px;
+  color: #a89070;
+  font-weight: 500;
+}
+
+/* ── Event Item ── */
+.eventItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0ebe3;
+  transition: background 0.15s;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.eventItem:last-child {
+  border-bottom: none;
+}
+
+.eventItem:hover {
+  background: #faf8f5;
+}
+
+.eventItem.noRevenue {
+  opacity: 0.6;
+}
+
+.eventItem.noRevenue:hover {
+  opacity: 1;
+}
+
+.eventLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.eventThumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #faf8f5, #f0ebe3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.eventThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.eventInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3d2f1f;
+}
+
+.eventMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #a89070;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.eventMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.eventMetaItem svg {
+  width: 13px;
+  height: 13px;
+}
+
+.eventRight {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+.eventStats {
+  text-align: right;
+}
+
+.eventRevenue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3d2f1f;
+}
+
+.eventRevenue.highlight {
+  background: linear-gradient(135deg, #c8a882, #b8916a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.eventRevenueZero {
+  font-size: 16px;
+  font-weight: 700;
+  color: #c0a888;
+}
+
+.eventSold {
+  font-size: 12px;
+  color: #a89070;
+}
+
+.eventArrow {
+  color: #c0a888;
+  transition: transform 0.2s;
+}
+
+.eventItem:hover .eventArrow {
+  transform: translateX(4px);
+}
+
+/* ── Badges ── */
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+
+.badgePublished {
+  background: #e8f5ef;
+  color: #2e7d5a;
+}
+
+.badgeDraft {
+  background: #f0ebe3;
+  color: #7d6550;
+}
+
+.badgeCancelled {
+  background: #fce8e8;
+  color: #b03030;
+}
+
+/* ── Divider ── */
+.divider {
+  padding: 12px 24px;
+  background: #faf8f5;
+  border-top: 1px solid #f0ebe3;
+  border-bottom: 1px solid #f0ebe3;
+}
+
+.dividerText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a89070;
+}
+
+/* ── Empty ── */
+.empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: #c0a888;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.emptyText {
+  font-weight: 500;
+}
+
+.emptySub {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* ── Loading ── */
+.loadingItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0ebe3;
+}
+
+.loadingThumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f0ebe3 25%, #e8e0d5 50%, #f0ebe3 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+  flex-shrink: 0;
+}
+
+.loadingText {
+  flex: 1;
+}
+
+.loadingText div {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0ebe3 25%, #e8e0d5 50%, #f0ebe3 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.loadingText div:first-child {
+  width: 60%;
+  margin-bottom: 6px;
+}
+
+.loadingText div:last-child {
+  width: 40%;
+  height: 12px;
+}
+
+.loadingRevenue {
+  width: 80px;
+  height: 20px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0ebe3 25%, #e8e0d5 50%, #f0ebe3 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .eventRight {
+    margin-left: 0;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .eventLeft {
+    gap: 12px;
+  }
+
+  .eventThumb {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eventMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .cardHeader {
+    padding: 12px 16px;
+  }
+
+  .eventItem {
+    padding: 12px 16px;
+  }
+
+  .divider {
+    padding: 10px 16px;
+  }
+}

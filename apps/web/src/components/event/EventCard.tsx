@@ -21,10 +21,10 @@ export default function EventCard({ event }: EventCardProps) {
   const isSoldOut = totalSlots === 0;
 
   return (
-    <Link href={`/events/${event.id}`}>
-      <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-[var(--color-cream-dark)]">
-        {/* Cover Image */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-[var(--color-cream-dark)]">
+    <Link href={`/events/${event.id}`} className="block h-full">
+      <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-[var(--color-cream-dark)] h-full flex flex-col">
+        {/* Cover Image - fixed aspect ratio */}
+        <div className="relative aspect-[16/9] overflow-hidden bg-[var(--color-cream-dark)] flex-shrink-0">
           {event.coverUrl ? (
             <img
               src={event.coverUrl}
@@ -56,16 +56,18 @@ export default function EventCard({ event }: EventCardProps) {
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-4">
-          <h3 className="font-semibold text-[var(--color-text)] text-base leading-snug line-clamp-2 mb-3 group-hover:text-[var(--color-primary)] transition-colors">
+        {/* Content - flex column để đẩy footer xuống dưới */}
+        <div className="p-4 flex flex-col flex-1">
+          {/* Title - fixed height 2 lines */}
+          <h3 className="font-semibold text-[var(--color-text)] text-base leading-snug line-clamp-2 min-h-[48px] mb-3 group-hover:text-[var(--color-primary)] transition-colors">
             {event.title}
           </h3>
 
-          <div className="flex flex-col gap-2 mb-4">
+          {/* Meta info - flex-1 để đẩy xuống */}
+          <div className="flex flex-col gap-2 mb-4 flex-1">
             <div className="flex items-center gap-2 text-[var(--color-text-muted)] text-sm">
               <Calendar size={14} className="shrink-0" />
-              <span>
+              <span className="line-clamp-1">
                 {format(new Date(event.startAt), "EEEE, dd/MM/yyyy • HH:mm", {
                   locale: vi,
                 })}
@@ -79,7 +81,8 @@ export default function EventCard({ event }: EventCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-3 border-t border-[var(--color-cream-dark)]">
+          {/* Footer - luôn ở dưới cùng */}
+          <div className="flex items-center justify-between pt-3 border-t border-[var(--color-cream-dark)] mt-auto">
             <div className="flex items-center gap-1.5 text-[var(--color-text-muted)] text-xs">
               <Ticket size={13} />
               <span>{totalSlots} vé còn lại</span>

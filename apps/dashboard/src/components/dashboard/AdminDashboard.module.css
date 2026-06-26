@@ -1,0 +1,241 @@
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: #a89070;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.statCard {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  padding: 20px;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.35s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(139, 94, 60, 0.1);
+  border-color: #ddd0be;
+}
+
+.statCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.statIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.statCard:hover .statIcon {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.statCount {
+  font-size: 26px;
+  font-weight: 800;
+  color: #3d2f1f;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+  transition: color 0.2s;
+}
+
+.statCard:hover .statCount {
+  color: #8b5e3c;
+}
+
+.statLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #a89070;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.statArrow {
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.statCard:hover .statArrow {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.listCard {
+  background: #fff;
+  border: 1px solid #e8e0d5;
+  border-radius: 14px;
+  padding: 20px;
+  animation: fadeInUp 0.35s ease both;
+}
+
+.listCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.listCardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3d2f1f;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.listCardTitle svg {
+  color: #c0a888;
+}
+
+.listCardLink {
+  font-size: 12px;
+  color: #c0a888;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.listCardLink:hover {
+  color: #8b5e3c;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0ebe3;
+  transition: background 0.15s;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover {
+  background: #faf8f5;
+  margin: 0 -8px;
+  padding: 10px 8px;
+  border-radius: 8px;
+}
+
+.listItemLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.listItemTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3d2f1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listItemSub {
+  font-size: 12px;
+  color: #a89070;
+}
+
+.listItemRight {
+  font-size: 12px;
+  color: #7d6550;
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+.badgeStatus {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+
+.badgePending {
+  background: #faf0e0;
+  color: #a0692a;
+}
+
+.badgeConfirmed {
+  background: #e8f5ef;
+  color: #2e7d5a;
+}
+
+.badgeDraft {
+  background: #f0ebe3;
+  color: #7d6550;
+}
+
+.badgePublished {
+  background: #e8f5ef;
+  color: #2e7d5a;
+}
+
+.emptyText {
+  text-align: center;
+  color: #c0a888;
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid4 {
+    grid-template-columns: 1fr;
+  }
+}

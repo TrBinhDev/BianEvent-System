@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { EventImage } from "@/types/event.types";
 
@@ -8,12 +8,16 @@ interface EventSliderProps {
   coverUrl: string | null;
   images: EventImage[];
   title: string;
+  autoPlay?: boolean; // ✅ Thêm prop
+  interval?: number; // ✅ Thêm prop
 }
 
 export default function EventSlider({
   coverUrl,
   images,
   title,
+  autoPlay = true, // ✅ Mặc định tự chạy
+  interval = 5000, // ✅ 5 giây
 }: EventSliderProps) {
   const allImages = [
     ...(coverUrl ? [{ id: "cover", url: coverUrl, order: -1 }] : []),
@@ -21,6 +25,17 @@ export default function EventSlider({
   ];
 
   const [current, setCurrent] = useState(0);
+
+  // ✅ Auto-play effect
+  useEffect(() => {
+    if (!autoPlay || allImages.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrent((c) => (c === allImages.length - 1 ? 0 : c + 1));
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [autoPlay, interval, allImages.length]);
 
   if (allImages.length === 0) {
     return (
@@ -36,8 +51,11 @@ export default function EventSlider({
     setCurrent((c) => (c === allImages.length - 1 ? 0 : c + 1));
 
   return (
-    <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-black group">
-      {/* Images */}
+    <div
+      className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-black group"
+      onMouseEnter={() => {}} // Có thể dùng để pause khi hover
+      onMouseLeave={() => {}}
+    >
       <div
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${current * 100}%)` }}
@@ -53,7 +71,6 @@ export default function EventSlider({
         ))}
       </div>
 
-      {/* Arrows — chỉ hiện khi có nhiều hơn 1 ảnh */}
       {allImages.length > 1 && (
         <>
           <button
@@ -69,7 +86,6 @@ export default function EventSlider({
             <ChevronRight size={20} />
           </button>
 
-          {/* Dots */}
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
             {allImages.map((_, i) => (
               <button
