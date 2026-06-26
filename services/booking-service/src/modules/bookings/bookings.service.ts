@@ -59,12 +59,7 @@ export const createBooking = async (userId: string, dto: CreateBookingDto) => {
     );
   }
 
-  // 5. Kiểm tra slot
-  if (ticketType.availableSlots < quantity) {
-    throw new AppError(400, "Không đủ vé");
-  }
-
-  // 6. Redis seat lock
+  // 5. Redis seat lock
   const lockKey = `lock:ticket:${ticketTypeId}:${userId}`;
   const locked = await redis.set(lockKey, "1", "EX", LOCK_TTL, "NX");
   if (!locked) throw new AppError(409, "Vé đang được xử lý, vui lòng thử lại");
@@ -73,14 +68,14 @@ export const createBooking = async (userId: string, dto: CreateBookingDto) => {
   let slotDecremented = false;
 
   try {
-    // 7. Trừ slot ở Event Service
+    // 6. Trừ slot ở Event Service
     await eventServiceApi.patch(
       `/internal/ticket-types/${ticketTypeId}/slots/decrement`,
       { quantity },
     );
     slotDecremented = true;
 
-    // 8. Tạo booking + tickets + log
+    // 7. Tạo booking + tickets + log
     const totalAmount = Number(ticketType.price) * quantity;
 
     booking = await prisma.$transaction(
@@ -139,17 +134,17 @@ export const createBooking = async (userId: string, dto: CreateBookingDto) => {
       },
     );
 
-    // 9. Cập nhật tổng vé user đã đặt cho event
+    // 8. Cập nhật tổng vé user đã đặt cho event
     await redis.incrby(userEventKey, quantity);
     await redis.expire(userEventKey, 60 * 60 * 24 * 30); // 30 ngày
 
-    // 10. Lấy danh sách tickets vừa tạo
+    // 9. Lấy danh sách tickets vừa tạo
     const tickets = await prisma.ticket.findMany({
       where: { bookingId: booking.id },
       select: { id: true },
     });
 
-    // 11. Publish booking.confirmed
+    // 10. Publish booking.confirmed
     await kafkaProducer.send({
       topic: "booking.confirmed",
       messages: [
