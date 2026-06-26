@@ -1,8 +1,12 @@
-import { Request, Response, NextFunction } from 'express'
-import { prisma } from '../config/database'
-import { AppError } from '../middlewares/error-handler'
+import { Request, Response, NextFunction } from "express";
+import { prisma } from "../config/database";
+import { AppError } from "../middlewares/error-handler";
 
-export const getEventById = async (req: Request, res: Response, next: NextFunction) => {
+export const getEventById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const event = await prisma.event.findUnique({
       where: { id: req.params.id },
@@ -16,17 +20,21 @@ export const getEventById = async (req: Request, res: Response, next: NextFuncti
         title: true,
         organizerId: true,
       },
-    })
+    });
 
-    if (!event) throw new AppError(404, 'Event không tồn tại')
+    if (!event) throw new AppError(404, "Event không tồn tại");
 
-    res.json({ success: true, data: event })
+    res.json({ success: true, data: event });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
-export const getTicketTypeById = async (req: Request, res: Response, next: NextFunction) => {
+export const getTicketTypeById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const ticketType = await prisma.ticketType.findUnique({
       where: { id: req.params.id },
@@ -40,50 +48,56 @@ export const getTicketTypeById = async (req: Request, res: Response, next: NextF
           },
         },
       },
-    })
+    });
 
-    if (!ticketType) throw new AppError(404, 'Loại vé không tồn tại')
+    if (!ticketType) throw new AppError(404, "Loại vé không tồn tại");
 
-    res.json({ success: true, data: ticketType })
+    res.json({ success: true, data: ticketType });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
-export const decrementSlots = async (req: Request, res: Response, next: NextFunction) => {
+export const decrementSlots = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { quantity } = req.body
-    const { id } = req.params
+    const { quantity } = req.body;
+    const { id } = req.params;
 
-    const ticketType = await prisma.ticketType.findUnique({ where: { id } })
-    if (!ticketType) throw new AppError(404, 'Loại vé không tồn tại')
-    if (ticketType.availableSlots < quantity) throw new AppError(400, 'Không đủ slot')
-
-    await prisma.$executeRaw`
+    const result = await prisma.$executeRaw`
       UPDATE ticket_types
       SET available_slots = available_slots - ${quantity}
       WHERE id = ${id} AND available_slots >= ${quantity}
-    `
+    `;
 
-    res.json({ success: true, message: 'Trừ slot thành công' })
+    if (result === 0) throw new AppError(400, "Không đủ slot");
+
+    res.json({ success: true, message: "Trừ slot thành công" });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
-export const incrementSlots = async (req: Request, res: Response, next: NextFunction) => {
+export const incrementSlots = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { quantity } = req.body
-    const { id } = req.params
+    const { quantity } = req.body;
+    const { id } = req.params;
 
     await prisma.$executeRaw`
       UPDATE ticket_types
       SET available_slots = available_slots + ${quantity}
       WHERE id = ${id}
-    `
+    `;
 
-    res.json({ success: true, message: 'Hoàn slot thành công' })
+    res.json({ success: true, message: "Hoàn slot thành công" });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
