@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import * as bookingsService from "./bookings.service";
-import { createBookingDto, getBookingsQueryDto } from "./bookings.dto";
+import { createBookingDto, getBookingsQueryDto, getEventBookingsQueryDto } from "./bookings.dto";
 import { AuthRequest } from "../../middlewares/authenticate";
 
 export const createBooking = async (
@@ -42,6 +42,24 @@ export const getMyBookingById = async (
       req.params.id,
     );
     res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getEventBookings = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const query = getEventBookingsQueryDto.parse(req.query);
+    const result = await bookingsService.getEventBookings(
+      req.params.eventId,
+      req.user!.userId,
+      query,
+    );
+    res.json({ success: true, ...result });
   } catch (err) {
     next(err);
   }

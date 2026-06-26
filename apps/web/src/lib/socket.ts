@@ -31,6 +31,15 @@ export const connectSocket = (userId: string) => {
     useNotificationStore.getState().incrementUnread()
   })
 
+  socket.on('user_banned', () => {
+    toast.error('Tài khoản của bạn đã bị khoá. Bạn sẽ bị đăng xuất.', { duration: 4000 })
+    setTimeout(() => {
+      disconnectSocket()
+      useAuthStore.getState().clearAuth()
+      window.location.href = '/login'
+    }, 2000)
+  })
+
   socket.on('disconnect', () => {
     console.log('Socket disconnected')
   })
@@ -49,7 +58,7 @@ export const leaveEventRoom = (eventId: string) => {
   socket?.emit('leave:event', eventId)
 }
 
-export const onSlotUpdated = (callback: (data: { eventId: string }) => void) => {
+export const onSlotUpdated = (callback: (data: { eventTitle: string; ticketTypeName: string; quantity: number }) => void) => {
   socket?.on('slot_updated', callback)
 }
 

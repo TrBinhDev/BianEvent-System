@@ -90,6 +90,11 @@ export const updateUserStatus = async (id: string, dto: UpdateUserStatusDto) => 
   if (dto.status === 'BANNED') {
     await redis.set(`banned:${id}`, '1')
     await prisma.refreshToken.deleteMany({ where: { userId: id } })
+
+    await kafkaProducer.send({
+      topic: 'user.banned',
+      messages: [{ value: JSON.stringify({ userId: id }) }],
+    })
   } else {
     await redis.del(`banned:${id}`)
   }

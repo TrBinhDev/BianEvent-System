@@ -25,6 +25,24 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
   }
 }
 
+export const getUsersByIds = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { ids } = req.body as { ids: string[] }
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.json({ success: true, data: [] })
+    }
+
+    const users = await prisma.user.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, email: true, fullName: true },
+    })
+
+    res.json({ success: true, data: users })
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization

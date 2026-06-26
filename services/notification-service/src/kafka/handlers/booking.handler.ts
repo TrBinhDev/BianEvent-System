@@ -12,6 +12,7 @@ import React from "react";
 interface BookingConfirmedPayload {
   bookingId: string;
   userId: string;
+  eventId: string;
   email?: string;
   fullName?: string;
   eventTitle: string;
@@ -38,11 +39,13 @@ export const handleBookingConfirmed = async (
   let {
     bookingId,
     userId,
+    eventId,
     email,
     fullName,
     eventTitle,
     ticketTypeName,
     zone,
+    quantity,
     startAt,
     venueName,
     tickets,
@@ -157,8 +160,10 @@ export const handleBookingConfirmed = async (
       quantity: tickets.length,
     });
 
-    io.to(`event:${bookingId}`).emit("slot_updated", {
+    io.to(`event:${eventId}`).emit("slot_updated", {
       eventTitle,
+      ticketTypeName,
+      quantity,
     });
 
     io.to(`user:${userId}`).emit("new_notification", {

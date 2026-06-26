@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MapPin, Calendar, Clock, Ticket, ChevronLeft } from "lucide-react";
 import { format } from "date-fns";
@@ -20,6 +20,12 @@ import {
 import toast from "react-hot-toast";
 import Link from "next/link";
 
+type LiveFeedItem = {
+  id: number;
+  ticketTypeName: string;
+  quantity: number;
+};
+
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -29,6 +35,8 @@ export default function EventDetailPage() {
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [booking, setBooking] = useState(false);
+  const [liveFeed, setLiveFeed] = useState<LiveFeedItem[]>([]);
+  const liveFeedCounter = useRef(0);
 
   const fetchEvent = () => {
     eventService.getEventById(id).then((res) => {
@@ -41,8 +49,17 @@ export default function EventDetailPage() {
     fetchEvent();
     joinEventRoom(id);
 
-    onSlotUpdated(() => {
+    onSlotUpdated((data) => {
       fetchEvent();
+      const newItem: LiveFeedItem = {
+        id: ++liveFeedCounter.current,
+        ticketTypeName: data.ticketTypeName,
+        quantity: data.quantity,
+      };
+      setLiveFeed((prev) => [newItem, ...prev].slice(0, 5));
+      setTimeout(() => {
+        setLiveFeed((prev) => prev.filter((item) => item.id !== newItem.id));
+      }, 5000);
     });
 
     return () => {
@@ -182,6 +199,31 @@ export default function EventDetailPage() {
                 Giới thiệu
               </h3>
               <p>{event.description}</p>
+            </div>
+          )}
+
+          {/* Live feed */}
+          {liveFeed.length > 0 && (
+            <div className="mb-6">
+              <div className="flex flex-col gap-2">
+                {liveFeed.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] bg-[var(--color-cream)] border border-[var(--color-cream-dark)] rounded-xl px-4 py-2 animate-fade-in"
+                  >
+                    <span className="text-base">🎟️</span>
+                    <span>
+                      Ai đó vừa mua{" "}
+                      <span className="font-semibold text-[var(--color-text)]">
+                        {item.quantity} vé
+                      </span>{" "}
+                      <span className="text-[var(--color-primary)]">
+                        {item.ticketTypeName}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

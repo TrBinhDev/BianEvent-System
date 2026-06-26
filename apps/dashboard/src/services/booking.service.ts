@@ -17,6 +17,15 @@ export const bookingService = {
     return res.data;
   },
 
+  // Organizer
+  getEventBookings: async (
+    eventId: string,
+    params?: { page?: number; limit?: number },
+  ) => {
+    const res = await api.get(`/api/bookings/organizer/events/${eventId}/bookings`, { params });
+    return res.data;
+  },
+
   // Checkin
   checkinTicket: async (ticketId: string) => {
     const res = await api.patch(`/api/bookings/tickets/${ticketId}/checkin`);

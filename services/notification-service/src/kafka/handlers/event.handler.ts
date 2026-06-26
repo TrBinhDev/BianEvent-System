@@ -5,6 +5,43 @@ import { prisma } from '../../config/database'
 import { getIO } from '../../socket/socket'
 import React from 'react'
 
+interface EventCreatedPayload {
+  eventId: string
+  organizerId: string
+  title: string
+  city: string
+  startAt: string
+}
+
+export const handleEventCreated = async (payload: EventCreatedPayload) => {
+  const { organizerId, title } = payload
+
+  try {
+    await prisma.notification.create({
+      data: {
+        userId: organizerId,
+        title: 'Sự kiện đã được publish',
+        body: `Sự kiện "${title}" của bạn đã được publish thành công và đang hiển thị với người dùng.`,
+        type: 'EVENT_PUBLISHED',
+      },
+    })
+  } catch (dbError) {
+    console.error('❌ Failed to save notification:', dbError)
+  }
+
+  try {
+    const io = getIO()
+    io.to(`user:${organizerId}`).emit('event_published', { title })
+    io.to(`user:${organizerId}`).emit('new_notification', {
+      title: 'Sự kiện đã được publish',
+      body: `Sự kiện "${title}" đã được publish thành công.`,
+      type: 'EVENT_PUBLISHED',
+    })
+  } catch (socketError) {
+    console.error('❌ Socket emit error (event_published):', socketError)
+  }
+}
+
 interface EventCancelledPayload {
   eventId: string
   title: string

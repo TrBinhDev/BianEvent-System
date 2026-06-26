@@ -1,8 +1,8 @@
 import { Kafka } from 'kafkajs'
 import { env } from '../config/env'
-import { handleUserRegistered, handleOrganizerApproved } from './handlers/user.handler'
+import { handleUserRegistered, handleOrganizerApproved, handleUserBanned } from './handlers/user.handler'
 import { handleNotificationSend } from './handlers/notification.handler'
-import { handleEventCancelled } from './handlers/event.handler'
+import { handleEventCancelled, handleEventCreated } from './handlers/event.handler'
 import { handleBookingConfirmed, handleBookingFailed } from './handlers/booking.handler'
 
 const kafka = new Kafka({
@@ -20,8 +20,10 @@ export const connectConsumer = async () => {
     topics: [
       'user.registered',
       'user.organizer_approved',
+      'user.banned',
       'notification.send',
       'event.cancelled',
+      'event.created',
       'booking.confirmed',
       'booking.failed',
     ],
@@ -40,8 +42,14 @@ export const connectConsumer = async () => {
           case 'user.organizer_approved':
             await handleOrganizerApproved(payload)
             break
+          case 'user.banned':
+            await handleUserBanned(payload)
+            break
           case 'notification.send':
             await handleNotificationSend(payload)
+            break
+          case 'event.created':
+            await handleEventCreated(payload)
             break
           case 'event.cancelled':
             await handleEventCancelled(payload)

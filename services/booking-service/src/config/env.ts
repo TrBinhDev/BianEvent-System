@@ -22,6 +22,7 @@ const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string(),
 
   EVENT_SERVICE_URL: z.string(),
+  USER_SERVICE_URL: z.string(),
 })
 
 const parsed = envSchema.safeParse(process.env)

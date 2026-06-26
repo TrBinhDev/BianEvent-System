@@ -3,6 +3,7 @@ import { OtpEmail } from '../../email/templates/OtpEmail'
 import { OrganizerApprovedEmail } from '../../email/templates/OrganizerApprovedEmail'
 import { sendEmail } from '../../email/resend'
 import { prisma } from '../../config/database'
+import { getIO } from '../../socket/socket'
 import { env } from '../../config/env'
 import React from 'react'
 
@@ -27,6 +28,17 @@ export const handleUserRegistered = async (payload: UserRegisteredPayload) => {
   )
 
   await sendEmail(email, 'Xác thực tài khoản BianEvent', html)
+}
+
+export const handleUserBanned = async (payload: { userId: string }) => {
+  const { userId } = payload
+
+  try {
+    const io = getIO()
+    io.to(`user:${userId}`).emit('user_banned')
+  } catch (socketError) {
+    console.error('❌ Socket emit error (user_banned):', socketError)
+  }
 }
 
 export const handleOrganizerApproved = async (payload: OrganizerApprovedPayload) => {

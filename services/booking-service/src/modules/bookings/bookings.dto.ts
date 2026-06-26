@@ -15,5 +15,11 @@ export const getBookingsQueryDto = z.object({
   status: z.enum(['PENDING', 'CONFIRMED', 'FAILED', 'CANCELLED']).optional(),
 })
 
+export const getEventBookingsQueryDto = z.object({
+  page: z.string().default('1').transform(Number),
+  limit: z.string().default('10').transform(Number),
+})
+
 export type CreateBookingDto = z.infer<typeof createBookingDto>
 export type GetBookingsQueryDto = z.infer<typeof getBookingsQueryDto>
+export type GetEventBookingsQueryDto = z.infer<typeof getEventBookingsQueryDto>

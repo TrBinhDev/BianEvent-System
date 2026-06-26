@@ -124,6 +124,14 @@ app.all(
     proxy.web(req, res, { target: env.BOOKING_SERVICE_URL });
   },
 );
+app.all(
+  "/api/bookings/organizer*",
+  authenticate,
+  authorize("ORGANIZER"),
+  (req, res) => {
+    proxy.web(req, res, { target: env.BOOKING_SERVICE_URL });
+  },
+);
 app.all("/api/bookings", authenticate, authorize("USER"), (req, res) => {
   proxy.web(req, res, { target: env.BOOKING_SERVICE_URL });
 });

@@ -4,7 +4,7 @@ import { kafkaProducer } from "../../kafka/producer";
 import { AppError } from "../../middlewares/error-handler";
 import axios from "axios";
 import { env } from "../../config/env";
-import type { CreateBookingDto, GetBookingsQueryDto } from "./bookings.dto";
+import type { CreateBookingDto, GetBookingsQueryDto, GetEventBookingsQueryDto } from "./bookings.dto";
 
 const LOCK_TTL = 300; // 5 phút
 const IDEMPOTENCY_TTL = 10; // 10 giây
@@ -12,6 +12,11 @@ const MAX_TICKETS_PER_EVENT = 4;
 
 const eventServiceApi = axios.create({
   baseURL: env.EVENT_SERVICE_URL,
+  headers: { "x-internal-key": env.INTERNAL_API_KEY },
+});
+
+const userServiceApi = axios.create({
+  baseURL: env.USER_SERVICE_URL,
   headers: { "x-internal-key": env.INTERNAL_API_KEY },
 });
 
@@ -152,6 +157,7 @@ export const createBooking = async (userId: string, dto: CreateBookingDto) => {
           value: JSON.stringify({
             bookingId: booking.id,
             userId,
+            eventId: ticketType.eventId,
             eventTitle: ticketType.event.title,
             ticketTypeName: ticketType.name,
             zone: ticketType.zone,
@@ -235,6 +241,59 @@ export const getMyBookingById = async (userId: string, bookingId: string) => {
 
   return booking;
 };
+
+export const getEventBookings = async (
+  eventId: string,
+  organizerId: string,
+  query: GetEventBookingsQueryDto,
+) => {
+  const { page, limit } = query
+  const skip = (page - 1) * limit
+
+  const { data: eventRes } = await eventServiceApi.get(`/internal/events/${eventId}`)
+  const event = eventRes.data
+  if (event.organizerId !== organizerId) {
+    throw new AppError(403, 'Bạn không có quyền xem đơn đặt vé này')
+  }
+
+  const [bookings, total] = await Promise.all([
+    prisma.booking.findMany({
+      where: { eventId },
+      include: {
+        tickets: { select: { id: true, status: true } },
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.booking.count({ where: { eventId } }),
+  ])
+
+  // Batch fetch user info
+  const userIds = [...new Set(bookings.map((b) => b.userId))]
+  let userMap: Record<string, { fullName: string; email: string }> = {}
+  if (userIds.length > 0) {
+    try {
+      const { data: usersRes } = await userServiceApi.post('/internal/users/batch', { ids: userIds })
+      for (const u of usersRes.data) {
+        userMap[u.id] = { fullName: u.fullName, email: u.email }
+      }
+    } catch {
+      // non-fatal: hiện userId nếu user-service lỗi
+    }
+  }
+
+  const data = bookings.map((b) => ({
+    ...b,
+    userFullName: userMap[b.userId]?.fullName ?? null,
+    userEmail: userMap[b.userId]?.email ?? null,
+  }))
+
+  return {
+    data,
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  }
+}
 
 export const checkinTicket = async (ticketId: string, organizerId: string) => {
   const ticket = await prisma.ticket.findUnique({

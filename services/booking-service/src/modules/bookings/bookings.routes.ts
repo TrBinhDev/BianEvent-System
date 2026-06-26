@@ -13,6 +13,12 @@ router.post(
 );
 router.get("/my", authenticate, bookingsController.getMyBookings);
 router.get("/my/:id", authenticate, bookingsController.getMyBookingById);
+router.get(
+  "/organizer/events/:eventId/bookings",
+  authenticate,
+  authorize("ORGANIZER"),
+  bookingsController.getEventBookings,
+);
 router.patch(
   "/tickets/:ticketId/checkin",
   authenticate,

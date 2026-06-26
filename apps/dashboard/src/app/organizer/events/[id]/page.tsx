@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { eventService } from "@/services/event.service";
+import { bookingService } from "@/services/booking.service";
 import { Event, Category, TicketType } from "@/types/event.types";
 import {
   ChevronLeft,
@@ -24,6 +25,8 @@ import {
   Edit3,
   Save,
   X,
+  ClipboardList,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -69,9 +72,24 @@ export default function EventDetailPage() {
   const [saving, setSaving] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [editingTicket, setEditingTicket] = useState<TicketType | null>(null);
-  const [activeTab, setActiveTab] = useState<"info" | "tickets" | "media">(
+  const [activeTab, setActiveTab] = useState<"info" | "tickets" | "media" | "bookings">(
     "info",
   );
+
+  type Booking = {
+    id: string;
+    userId: string;
+    userFullName: string | null;
+    userEmail: string | null;
+    quantity: number;
+    totalAmount: number;
+    status: string;
+    createdAt: string;
+    tickets: { id: string; status: string }[];
+  };
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookingsPagination, setBookingsPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
+  const [bookingsLoading, setBookingsLoading] = useState(false);
 
   const {
     register,
@@ -244,6 +262,19 @@ export default function EventDetailPage() {
     }
   };
 
+  const fetchBookings = async (page = 1) => {
+    setBookingsLoading(true);
+    try {
+      const res = await bookingService.getEventBookings(id, { page, limit: 10 });
+      setBookings(res.data);
+      setBookingsPagination(res.pagination);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Tải đơn đặt vé thất bại");
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("vi-VN") + "đ";
   };
@@ -335,6 +366,13 @@ export default function EventDetailPage() {
         >
           <Image size={16} />
           Hình ảnh
+        </button>
+        <button
+          onClick={() => { setActiveTab("bookings"); fetchBookings(1); }}
+          className={`${styles.tab}${activeTab === "bookings" ? ` ${styles.active}` : ""}`}
+        >
+          <ClipboardList size={16} />
+          Đơn đặt vé
         </button>
       </div>
 
@@ -692,6 +730,113 @@ export default function EventDetailPage() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {activeTab === "bookings" && (
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <div className={styles.cardTitle}>
+              <ClipboardList size={16} />
+              Đơn đặt vé ({bookingsPagination.total})
+            </div>
+          </div>
+
+          <table className={styles.bTable}>
+            <thead className={styles.bThead}>
+              <tr>
+                <th className={styles.bTh}>Khách hàng</th>
+                <th className={styles.bTh}>Mã đơn</th>
+                <th className={styles.bTh}>Số lượng</th>
+                <th className={styles.bTh}>Check-in</th>
+                <th className={styles.bTh}>Ngày đặt</th>
+                <th className={styles.bTh}>Tổng tiền</th>
+                <th className={styles.bTh}>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookingsLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className={styles.bTr}>
+                    {Array.from({ length: 7 }).map((__, j) => (
+                      <td key={j} className={styles.bTd}>
+                        <div className={styles.bSkeleton} />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : bookings.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className={styles.bEmpty}>
+                    <Users size={36} strokeWidth={1.5} style={{ marginBottom: 8, color: "#e8e0d5" }} />
+                    <p>Chưa có đơn đặt vé nào</p>
+                  </td>
+                </tr>
+              ) : (
+                bookings.map((booking) => (
+                  <tr key={booking.id} className={styles.bTr}>
+                    <td className={styles.bTd}>
+                      <div className={styles.bUserName}>{booking.userFullName ?? "—"}</div>
+                      <div className={styles.bUserEmail}>
+                        {booking.userEmail ?? booking.userId.slice(0, 12)}
+                      </div>
+                    </td>
+                    <td className={styles.bTd}>
+                      <span className={styles.bId}>
+                        #{booking.id.slice(0, 8).toUpperCase()}
+                      </span>
+                    </td>
+                    <td className={styles.bTd}>{booking.quantity} vé</td>
+                    <td className={styles.bTd}>
+                      {booking.tickets.filter((t) => t.status === "USED").length}
+                      /{booking.tickets.length}
+                    </td>
+                    <td className={styles.bTd}>
+                      <span className={styles.bDate}>
+                        <Calendar size={13} />
+                        {new Date(booking.createdAt).toLocaleString("vi-VN", {
+                          day: "2-digit", month: "2-digit", year: "numeric",
+                          hour: "2-digit", minute: "2-digit",
+                        })}
+                      </span>
+                    </td>
+                    <td className={styles.bTd}>
+                      <span className={styles.bAmount}>
+                        {formatCurrency(Number(booking.totalAmount))}
+                      </span>
+                    </td>
+                    <td className={styles.bTd}>
+                      <span className={`${styles.badge} ${booking.status === "CONFIRMED" ? styles.badgeSuccess : styles.badgeError}`}>
+                        {booking.status === "CONFIRMED" ? "Đã xác nhận" : booking.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {bookingsPagination.totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button
+                disabled={bookingsPagination.page <= 1}
+                onClick={() => fetchBookings(bookingsPagination.page - 1)}
+                className={styles.pageBtn}
+              >
+                ←
+              </button>
+              <span className={styles.pageInfo}>
+                {bookingsPagination.page} / {bookingsPagination.totalPages}
+              </span>
+              <button
+                disabled={bookingsPagination.page >= bookingsPagination.totalPages}
+                onClick={() => fetchBookings(bookingsPagination.page + 1)}
+                className={styles.pageBtn}
+              >
+                →
+              </button>
+            </div>
+          )}
         </div>
       )}
 
