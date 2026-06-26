@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #8B1A1A;
+  --color-primary-light: #B22222;
+  --color-primary-dark: #5C1010;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F5E6D0;
+  --color-text: #2C1810;
+  --color-text-muted: #8B6F5E;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-text);
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 3px;
+}
+
+/* Animation hoa rơi */
+@keyframes fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes firework {
+  0% {
+    transform: rotate(var(--angle)) translateY(0px) scale(1);
+    opacity: 1;
+  }
+
+  60% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: rotate(var(--angle)) translateY(-70px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes firework-flash {
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  30% {
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes flag-sway {
+
+  0%,
+  100% {
+    transform: rotate(-3deg) translateY(0px);
+  }
+
+  25% {
+    transform: rotate(2deg) translateY(1px);
+  }
+
+  50% {
+    transform: rotate(-1deg) translateY(2px);
+  }
+
+  75% {
+    transform: rotate(3deg) translateY(1px);
+  }
+}
+
+@keyframes string-wave {
+
+  0%,
+  100% {
+    d: path("M 0 0 Q 100 45 200 20");
+  }
+
+  50% {
+    d: path("M 0 0 Q 100 35 200 20");
+  }
+}
+
+.petal {
+  position: fixed;
+  pointer-events: none;
+  animation: fall linear infinite;
+  z-index: 0;
+}
+
+.flag-string {
+  animation: sway 3s ease-in-out infinite;
+  transform-origin: top center;
+}
