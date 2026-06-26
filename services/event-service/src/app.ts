@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/error-handler'
 import eventsRoutes from './modules/events/events.routes'
 import adminRoutes from './modules/admin/admin.routes'
 import internalRoutes from './internal/internal.routes'
+import organizerRoutes from './modules/events/organizer.routes'
 
 const app = express()
 
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use('/api/events', eventsRoutes)
+app.use('/api/organizer', organizerRoutes)  
 app.use('/api/admin', adminRoutes)
 app.use('/internal', internalRoutes)
 

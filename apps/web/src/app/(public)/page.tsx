@@ -45,7 +45,7 @@ export default function HomePage() {
               và doanh thu, tất cả ở một nơi.
             </p>
             <Link
-              href="/register"
+              href="/profile"
               className="inline-block px-6 py-3 bg-white text-[var(--color-primary)] rounded-full font-semibold hover:bg-white/90 transition-colors"
             >
               Đăng ký Organizer
