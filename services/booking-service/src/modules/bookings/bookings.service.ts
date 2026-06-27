@@ -37,7 +37,7 @@ export const createBooking = async (
     idemKey,
     JSON.stringify({ status: "PROCESSING" }),
     "EX",
-    IDEMPOTENCY_TTL, // nên để ~60s, đủ bao trọn thời gian xử lý
+    IDEMPOTENCY_TTL, // 60s — đủ bao trọn thời gian xử lý
     "NX",
   );
 
@@ -73,37 +73,38 @@ export const createBooking = async (
     throw new AppError(400, "Đã hết thời gian bán vé");
   }
 
-  // 4. Kiểm tra tổng vé user đã đặt cho event này
-  const userEventKey = `booking:user-event:${userId}:${ticketType.eventId}`;
-  const currentTotal = parseInt((await redis.get(userEventKey)) || "0");
-  if (currentTotal + quantity > MAX_TICKETS_PER_EVENT) {
-    await redis.del(idemKey);
-    throw new AppError(
-      400,
-      `Bạn chỉ được đặt tối đa ${MAX_TICKETS_PER_EVENT} vé cho mỗi event`,
-    );
-  }
-
-  // 5. Seat lock — chống xử lý song song trên cùng ticket type
-  const lockKey = `lock:ticket:${ticketTypeId}:${userId}`;
+  // 4. Seat lock — chống xử lý song song trên cùng event của 1 user
+  const lockKey = `lock:event:${ticketType.eventId}:${userId}`;
   const locked = await redis.set(lockKey, "1", "EX", LOCK_TTL, "NX");
   if (!locked) {
     await redis.del(idemKey);
     throw new AppError(409, "Vé đang được xử lý, vui lòng thử lại");
   }
 
+  // 5. Kiểm tra tổng vé user đã đặt cho event này (nằm trong vùng khóa)
+  const userEventKey = `booking:user-event:${userId}:${ticketType.eventId}`;
+  const currentTotal = parseInt((await redis.get(userEventKey)) || "0");
+  if (currentTotal + quantity > MAX_TICKETS_PER_EVENT) {
+    await redis.del(idemKey);
+    await redis.del(lockKey);
+    throw new AppError(
+      400,
+      `Bạn chỉ được đặt tối đa ${MAX_TICKETS_PER_EVENT} vé cho mỗi event`,
+    );
+  }
+
   let booking = null;
   let slotDecremented = false;
 
   try {
-    // 6. Trừ slot ở Event Service
+    // 6. Trừ slot ở Event Service (atomic UPDATE chống oversell ở đây)
     await eventServiceApi.patch(
       `/internal/ticket-types/${ticketTypeId}/slots/decrement`,
       { quantity },
     );
     slotDecremented = true;
 
-    // 7. Tạo booking + tickets + log
+    // 7. Tạo booking + tickets + log trong 1 transaction
     const totalAmount = Number(ticketType.price) * quantity;
 
     booking = await prisma.$transaction(
@@ -193,7 +194,7 @@ export const createBooking = async (
       ],
     });
 
-    // 11. Lưu kết quả vào idempotency key để request lặp nhận lại đúng response
+    // 11. Lưu kết quả vào idempotency key cho request lặp
     const result = { bookingId: booking.id, message: "Đặt vé thành công" };
     await redis.set(
       idemKey,
@@ -232,6 +233,7 @@ export const createBooking = async (
     if (err instanceof AppError) throw err;
     throw new AppError(500, "Đặt vé thất bại, vui lòng thử lại");
   } finally {
+    // Luôn nhả seat lock
     await redis.del(lockKey);
   }
 };
