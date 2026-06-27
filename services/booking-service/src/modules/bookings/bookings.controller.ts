@@ -1,7 +1,12 @@
 import { Response, NextFunction } from "express";
 import * as bookingsService from "./bookings.service";
-import { createBookingDto, getBookingsQueryDto, getEventBookingsQueryDto } from "./bookings.dto";
+import {
+  createBookingDto,
+  getBookingsQueryDto,
+  getEventBookingsQueryDto,
+} from "./bookings.dto";
 import { AuthRequest } from "../../middlewares/authenticate";
+import { AppError } from "../../middlewares/error-handler";
 
 export const createBooking = async (
   req: AuthRequest,
@@ -9,8 +14,17 @@ export const createBooking = async (
   next: NextFunction,
 ) => {
   try {
+    const idempotencyKey = req.headers["idempotency-key"] as string;
+    if (!idempotencyKey) {
+      throw new AppError(400, "Thiếu Idempotency-Key");
+    }
+
     const body = createBookingDto.parse(req.body);
-    const result = await bookingsService.createBooking(req.user!.userId, body);
+    const result = await bookingsService.createBooking(
+      req.user!.userId,
+      body,
+      idempotencyKey,
+    );
     res.status(201).json({ success: true, ...result });
   } catch (err) {
     next(err);

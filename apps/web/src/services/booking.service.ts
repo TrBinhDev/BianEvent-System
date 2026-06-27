@@ -2,8 +2,13 @@ import api from "@/lib/axios";
 import { BookingsResponse, Booking } from "@/types/booking.types";
 
 export const bookingService = {
-  createBooking: async (data: { ticketTypeId: string; quantity: number }) => {
-    const res = await api.post("/api/bookings", data);
+  createBooking: async (
+    data: { ticketTypeId: string; quantity: number },
+    idempotencyKey: string,
+  ) => {
+    const res = await api.post("/api/bookings", data, {
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
     return res.data;
   },
 

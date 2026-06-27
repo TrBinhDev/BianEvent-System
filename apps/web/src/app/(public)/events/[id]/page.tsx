@@ -81,10 +81,14 @@ export default function EventDetailPage() {
 
     setBooking(true);
     try {
-      await bookingService.createBooking({
-        ticketTypeId: selectedTicket.id,
-        quantity,
-      });
+      const idempotencyKey = crypto.randomUUID();
+      await bookingService.createBooking(
+        {
+          ticketTypeId: selectedTicket.id,
+          quantity,
+        },
+        idempotencyKey,
+      );
       toast.success("Đặt vé thành công! Kiểm tra email để nhận vé.");
       fetchEvent();
     } catch (err: any) {
