@@ -16,14 +16,16 @@
 
 ### Topics consume
 
-| Topic                     | Khi nào                    | Xử lý                                                   |
-| ------------------------- | -------------------------- | ------------------------------------------------------- |
-| `user.registered`         | User đăng ký tài khoản mới | Gửi email OTP xác thực                                  |
-| `user.organizer_approved` | Admin duyệt đơn Organizer  | Gửi email chúc mừng + lưu notification                  |
-| `notification.send`       | Forgot password            | Gửi email reset password                                |
-| `event.cancelled`         | Event bị huỷ               | Gửi email + lưu notification cho toàn bộ user đã đặt vé |
-| `booking.confirmed`       | Đặt vé thành công          | Gửi email + emit Socket + lưu notification              |
-| `booking.failed`          | Đặt vé thất bại            | Gửi email + emit Socket + lưu notification              |
+| Topic                     | Khi nào                    | Xử lý                                                                      |
+| ------------------------- | -------------------------- | -------------------------------------------------------------------------- |
+| `user.registered`         | User đăng ký tài khoản mới | Gửi email OTP xác thực                                                     |
+| `user.organizer_approved` | Admin duyệt đơn Organizer  | Gửi email chúc mừng + lưu notification                                     |
+| `notification.send`       | Forgot password            | Gửi email reset password                                                   |
+| `user.banned`             | Admin ban tài khoản        | Emit Socket `user_banned` đến `user:{userId}` — client force logout        |
+| `event.created`           | Organizer publish event    | Lưu notification `EVENT_PUBLISHED` + emit Socket `event_published` đến organizer |
+| `event.cancelled`         | Event bị huỷ               | Gửi email + lưu notification cho toàn bộ user đã đặt vé                   |
+| `booking.confirmed`       | Đặt vé thành công          | Gửi email + emit Socket + lưu notification                                 |
+| `booking.failed`          | Đặt vé thất bại            | Gửi email + emit Socket + lưu notification                                 |
 
 ### Kafka Payload mỗi topic
 
@@ -60,10 +62,25 @@
   bookedUserEmails: { userId: string, email: string, fullName: string }[]
 }
 
+// user.banned
+{
+  userId: string
+}
+
+// event.created
+{
+  eventId: string
+  organizerId: string
+  title: string
+  city: string
+  startAt: string
+}
+
 // booking.confirmed
 {
   bookingId: string
   userId: string
+  eventId: string
   email: string
   fullName: string
   eventTitle: string
@@ -100,6 +117,7 @@ CREATE TABLE notifications (
                 'BOOKING_CONFIRMED',
                 'BOOKING_FAILED',
                 'EVENT_CANCELLED',
+                'EVENT_PUBLISHED',
                 'ORGANIZER_APPROVED'
               ) NOT NULL,
   is_read     BOOLEAN DEFAULT FALSE,
@@ -128,12 +146,14 @@ CREATE TABLE notifications (
 
 ### Events emit về client
 
-| Event               | Trigger                      | Data                                        | Phạm vi                         |
-| ------------------- | ---------------------------- | ------------------------------------------- | ------------------------------- |
-| `booking_confirmed` | Consume `booking.confirmed`  | `{ bookingId, eventTitle, quantity }`       | Emit đúng user đặt vé           |
-| `booking_failed`    | Consume `booking.failed`     | `{ eventTitle, reason }`                    | Emit đúng user đặt vé           |
-| `slot_updated`      | Consume `booking.confirmed`  | `{ eventId, ticketTypeId, availableSlots }` | Emit tất cả user đang xem event |
-| `new_notification`  | Mọi khi lưu notification mới | `{ id, title, body, type, createdAt }`      | Emit đúng user nhận thông báo   |
+| Event               | Trigger                      | Data                                                          | Phạm vi                         |
+| ------------------- | ---------------------------- | ------------------------------------------------------------- | ------------------------------- |
+| `booking_confirmed` | Consume `booking.confirmed`  | `{ bookingId, eventTitle, quantity }`                         | Emit đúng user đặt vé           |
+| `booking_failed`    | Consume `booking.failed`     | `{ eventTitle, reason }`                                      | Emit đúng user đặt vé           |
+| `slot_updated`      | Consume `booking.confirmed`  | `{ eventId, ticketTypeId, ticketTypeName, quantity, availableSlots }` | Emit tất cả user đang xem event |
+| `new_notification`  | Mọi khi lưu notification mới | `{ id, title, body, type, createdAt }`                        | Emit đúng user nhận thông báo   |
+| `user_banned`       | Consume `user.banned`        | `{ userId }`                                                  | Emit đúng user bị ban → force logout |
+| `event_published`   | Consume `event.created`      | `{ eventId, title }`                                          | Emit đến organizer tạo event    |
 
 ### Room strategy
 
@@ -259,5 +279,5 @@ DASHBOARD_URL=http://localhost:4001
 
 **Database:**
 
-- Chỉ lưu notification cho các loại cần user xem lại: `BOOKING_CONFIRMED`, `BOOKING_FAILED`, `EVENT_CANCELLED`, `ORGANIZER_APPROVED`
+- Chỉ lưu notification cho các loại cần user xem lại: `BOOKING_CONFIRMED`, `BOOKING_FAILED`, `EVENT_CANCELLED`, `EVENT_PUBLISHED`, `ORGANIZER_APPROVED`
 - Không lưu notification cho OTP và reset password — đây là email transactional, không cần hiển thị trong app

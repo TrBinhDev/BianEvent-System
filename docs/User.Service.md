@@ -7,7 +7,7 @@
 | Port             | `:3001`                                              |
 | Database         | PostgreSQL — `db_users` (Database-per-Service)       |
 | Cache            | Redis — OTP, refresh token                           |
-| Kafka            | Publish `user.registered`, `user.organizer_approved` |
+| Kafka            | Publish `user.registered`, `user.organizer_approved`, `user.banned` |
 | Giao tiếp nội bộ | Internal REST API cho các service khác               |
 
 ---
@@ -142,11 +142,12 @@ refresh_token:{userId}      — danh sách refresh token hợp lệ (bỏ lưu t
 | Method | Endpoint                       | Caller                        | Mô tả                                     |
 | ------ | ------------------------------ | ----------------------------- | ----------------------------------------- |
 | GET    | `/internal/users/:id`          | Booking, Notification Service | Lấy `email`, `full_name` để gửi thông báo |
+| POST   | `/internal/users/batch`        | Booking Service               | Lấy thông tin nhiều user theo danh sách `ids` |
 | POST   | `/internal/users/verify-token` | API Gateway                   | Xác thực JWT, trả về `userId` + `role`    |
 
 ---
 
-**Tổng: 21 API** (8 auth + 4 profile + 7 admin + 2 internal)
+**Tổng: 22 API** (8 auth + 4 profile + 7 admin + 3 internal)
 
 ---
 
@@ -173,8 +174,9 @@ Refresh Token — TTL: 7 ngày, lưu trong HttpOnly cookie
 | `user.registered`         | Sau khi register thành công | `{ userId, email, fullName, otp }`                    |
 | `user.organizer_approved` | Admin duyệt đơn Organizer   | `{ userId, email, fullName }`                         |
 | `notification.send`       | Forgot password             | `{ to, type: 'RESET_PASSWORD', data: { resetLink } }` |
+| `user.banned`             | Admin ban tài khoản         | `{ userId }`                                          |
 
-> Notification Service consume tất cả các topic trên để gửi email tương ứng
+> Notification Service consume tất cả các topic trên để gửi email / emit socket tương ứng
 
 ---
 
@@ -322,6 +324,8 @@ PATCH /admin/users/:id/status { status: BANNED }
   → Cập nhật DB users.status = BANNED
   → Lưu Redis: banned:{userId} = true (TTL không giới hạn)
   → Xoá toàn bộ refresh_tokens của user đó trong DB
+  → Publish Kafka: user.banned { userId }
+  → Notification Service emit Socket user_banned → client force logout ngay lập tức
 ```
 
 Khi user gọi API sau khi bị ban:

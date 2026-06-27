@@ -75,12 +75,30 @@ Notification Service xử lý: gửi email reset password.
 
 ---
 
+### `user.banned`
+
+| Thuộc tính | Giá trị                                     |
+| ---------- | ------------------------------------------- |
+| Publisher  | User Service                                |
+| Consumer   | Notification Service (`notification-group`) |
+| Khi nào    | Admin ban tài khoản user                    |
+
+```typescript
+payload: {
+  userId: string;
+}
+```
+
+Notification Service xử lý: emit Socket `user_banned` đến room `user:{userId}` — client nhận và force logout ngay lập tức.
+
+---
+
 ### `event.created`
 
 | Thuộc tính | Giá trị                                     |
 | ---------- | ------------------------------------------- |
 | Publisher  | Event Service                               |
-| Consumer   | Không có (reserved cho sau)                 |
+| Consumer   | Notification Service (`notification-group`) |
 | Khi nào    | Organizer publish event (DRAFT → PUBLISHED) |
 
 ```typescript
@@ -93,7 +111,7 @@ payload: {
 }
 ```
 
-> Topic này khai báo sẵn, chưa có consumer. Sau này có thể dùng để gợi ý event cho user theo thành phố.
+Notification Service xử lý: lưu notification `EVENT_PUBLISHED` vào DB + emit Socket `event_published` và `new_notification` đến room `user:{organizerId}`.
 
 ---
 
@@ -138,6 +156,7 @@ Booking Service xử lý: cập nhật tất cả booking của event → `CANCE
 payload: {
   bookingId: string;
   userId: string;
+  eventId: string;
   email: string;
   fullName: string;
   eventTitle: string;
@@ -158,7 +177,7 @@ Notification Service xử lý:
 
 - Gửi email xác nhận kèm QR (1 email/ticket)
 - Emit Socket `booking_confirmed` về đúng user
-- Emit Socket `slot_updated` về tất cả user đang xem event
+- Emit Socket `slot_updated` (kèm `ticketTypeName`, `quantity`) về tất cả user đang xem event
 - Lưu notification
 
 ---
@@ -193,21 +212,21 @@ Notification Service xử lý:
 
 ### Publisher map
 
-| Service              | Publish topics                                                    |
-| -------------------- | ----------------------------------------------------------------- |
-| User Service         | `user.registered`, `user.organizer_approved`, `notification.send` |
-| Event Service        | `event.created`, `event.cancelled`                                |
-| Booking Service      | `booking.confirmed`, `booking.failed`                             |
-| Notification Service | Không publish                                                     |
+| Service              | Publish topics                                                                   |
+| -------------------- | -------------------------------------------------------------------------------- |
+| User Service         | `user.registered`, `user.organizer_approved`, `notification.send`, `user.banned` |
+| Event Service        | `event.created`, `event.cancelled`                                               |
+| Booking Service      | `booking.confirmed`, `booking.failed`                                            |
+| Notification Service | Không publish                                                                    |
 
 ### Consumer map
 
-| Service              | Consumer group       | Subscribe topics                                                                                                            |
-| -------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Notification Service | `notification-group` | `user.registered`, `user.organizer_approved`, `notification.send`, `event.cancelled`, `booking.confirmed`, `booking.failed` |
-| Booking Service      | `booking-group`      | `event.cancelled`                                                                                                           |
-| User Service         | Không consume        | —                                                                                                                           |
-| Event Service        | Không consume        | —                                                                                                                           |
+| Service              | Consumer group       | Subscribe topics                                                                                                                              |
+| -------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Notification Service | `notification-group` | `user.registered`, `user.organizer_approved`, `notification.send`, `event.created`, `event.cancelled`, `booking.confirmed`, `booking.failed`, `user.banned` |
+| Booking Service      | `booking-group`      | `event.cancelled`                                                                                                                             |
+| User Service         | Không consume        | —                                                                                                                                             |
+| Event Service        | Không consume        | —                                                                                                                                             |
 
 ### Topic × Consumer matrix
 
@@ -216,7 +235,8 @@ Notification Service xử lý:
 | `user.registered`         | ✓                  | —             |
 | `user.organizer_approved` | ✓                  | —             |
 | `notification.send`       | ✓                  | —             |
-| `event.created`           | —                  | —             |
+| `user.banned`             | ✓                  | —             |
+| `event.created`           | ✓                  | —             |
 | `event.cancelled`         | ✓                  | ✓             |
 | `booking.confirmed`       | ✓                  | —             |
 | `booking.failed`          | ✓                  | —             |
@@ -229,5 +249,5 @@ Notification Service xử lý:
 - Consumer group phải khai báo để Kafka lưu offset — service restart không mất message
 - Mỗi consumer handler phải **idempotent** — cùng 1 message xử lý nhiều lần không gây ra side effect
 - Lỗi xử lý 1 message không được làm crash toàn bộ consumer — bắt lỗi từng message riêng
-- Topic `event.created` khai báo sẵn dù chưa có consumer — không ảnh hưởng gì, Kafka không quan tâm
+- Topic `event.created` được consume bởi Notification Service để thông báo cho organizer khi event được publish
 - Payload phải đủ thông tin để consumer xử lý độc lập, không cần gọi thêm API khác nếu có thể

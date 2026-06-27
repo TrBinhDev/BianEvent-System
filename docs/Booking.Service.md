@@ -54,7 +54,7 @@ CREATE TABLE tickets (
   booking_id  UUID REFERENCES bookings(id) ON DELETE CASCADE,
   user_id     UUID NOT NULL,
   event_id    UUID NOT NULL,
-  status      ENUM('ACTIVE', 'CANCELLED') DEFAULT 'ACTIVE',
+  status      ENUM('ACTIVE', 'USED', 'CANCELLED') DEFAULT 'ACTIVE',
   created_at  TIMESTAMP DEFAULT NOW()
 );
 ```
@@ -86,13 +86,15 @@ booking:user-event:{userId}:{eventId} — tổng vé user đã đặt cho event 
 
 ## API Endpoints
 
-### User — `/api/bookings`
+### User / Organizer — `/api/bookings`
 
-| Method | Endpoint           | Role | Mô tả                                    |
-| ------ | ------------------ | ---- | ---------------------------------------- |
-| POST   | `/bookings`        | USER | Đặt vé — trigger toàn bộ flow xử lý      |
-| GET    | `/bookings/my`     | USER | Lịch sử đặt vé của mình, pagination      |
-| GET    | `/bookings/my/:id` | USER | Chi tiết 1 booking kèm danh sách tickets |
+| Method | Endpoint                                      | Role      | Mô tả                                              |
+| ------ | --------------------------------------------- | --------- | -------------------------------------------------- |
+| POST   | `/bookings`                                   | USER      | Đặt vé — trigger toàn bộ flow xử lý               |
+| GET    | `/bookings/my`                                | USER      | Lịch sử đặt vé của mình, pagination               |
+| GET    | `/bookings/my/:id`                            | USER      | Chi tiết 1 booking kèm danh sách tickets           |
+| GET    | `/bookings/organizer/events/:eventId/bookings`| ORGANIZER | Danh sách đơn đặt vé của 1 event (kèm tên user)   |
+| PATCH  | `/bookings/tickets/:ticketId/checkin`         | ORGANIZER | Check-in vé tại sự kiện, đổi ticket status → USED  |
 
 ### Admin — `/api/admin`
 
@@ -111,7 +113,7 @@ booking:user-event:{userId}:{eventId} — tổng vé user đã đặt cho event 
 
 ---
 
-**Tổng: 6 API** (3 user + 2 admin + 1 internal)
+**Tổng: 8 API** (5 user/organizer + 2 admin + 1 internal)
 
 ---
 
@@ -119,10 +121,10 @@ booking:user-event:{userId}:{eventId} — tổng vé user đã đặt cho event 
 
 ### Publish
 
-| Topic               | Khi nào            | Payload                                                                                                                                        |
-| ------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `booking.confirmed` | Booking thành công | `{ bookingId, userId, email, fullName, eventTitle, ticketTypeName, zone, quantity, totalAmount, startAt, venueName, tickets: [{ ticketId }] }` |
-| `booking.failed`    | Booking thất bại   | `{ userId, email, fullName, eventTitle, reason }`                                                                                              |
+| Topic               | Khi nào            | Payload                                                                                                                                                  |
+| ------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `booking.confirmed` | Booking thành công | `{ bookingId, userId, eventId, email, fullName, eventTitle, ticketTypeName, zone, quantity, totalAmount, startAt, venueName, tickets: [{ ticketId }] }` |
+| `booking.failed`    | Booking thất bại   | `{ userId, email, fullName, eventTitle, reason }`                                                                                                        |
 
 ### Consume
 
@@ -265,6 +267,7 @@ KAFKA_GROUP_ID=booking-group
 # Internal
 INTERNAL_API_KEY=your_internal_secret
 EVENT_SERVICE_URL=http://event-service:3002
+USER_SERVICE_URL=http://user-service:3001
 ```
 
 ---
