@@ -192,3 +192,5 @@ export const rejectApplication = async (id: string, adminId: string) => {
 
   return { message: 'Đã từ chối đơn Organizer' }
 }
+
+// Dev by TrBinhDev

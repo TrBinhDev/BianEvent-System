@@ -382,3 +382,5 @@ POST /auth/login
 - Organizer phải qua flow apply → Admin duyệt, không tự đổi role được
 - Chỉ ADMIN mới được đổi role, ban/unban tài khoản
 - Forgot password đi qua Kafka → Notification Service gửi email, User Service không tự gửi email trực tiếp
+
+// Dev by TrBinhDev
