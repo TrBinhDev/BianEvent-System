@@ -288,3 +288,9 @@ pnpm dev:dashboard     # Chạy Dashboard frontend
 ## Kafka UI
 
 Truy cập `http://localhost:8080` để xem Kafka topics và messages trực quann.
+
+## Author
+TrBinhDev - https://github.com/TrBinhDev - trbinh.dev@gmail.com
+
+## License
+Copyright (c) 2026 Trần Thanh. All rights reserved / MIT License.
